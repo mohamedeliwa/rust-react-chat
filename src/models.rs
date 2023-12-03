@@ -1,31 +1,29 @@
-use diesel::{deserialize::Queryable, prelude::Insertable};
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
+use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
-#[diesel(table_name = crate::schema::users)]
+#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize)]
 pub struct User {
-    pub id: String,
+    pub id: Uuid,
     pub username: String,
     pub phone: String,
-    pub created_at: String,
+    pub created_at: OffsetDateTime,
 }
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Queryable, Insertable)]
-#[diesel(table_name = crate::schema::conversations)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Conversation {
-    pub id: String,
-    pub room_id: String,
-    pub user_id: String,
+    pub id: Uuid,
+    pub room_id: Uuid,
+    pub user_id: Uuid,
     pub content: String,
-    pub created_at: String,
+    pub created_at: OffsetDateTime,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
-#[diesel(table_name = crate::schema::rooms)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Room {
-    pub id: String,
+    pub id: Uuid,
     pub name: String,
     pub last_message: String,
     pub participant_ids: String,
-    pub created_at: String,
+    pub created_at: OffsetDateTime,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NewUser {
@@ -34,8 +32,8 @@ pub struct NewUser {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NewConversation {
-    pub user_id: String,
-    pub room_id: String,
+    pub user_id: Uuid,
+    pub room_id: Uuid,
     pub message: String,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]

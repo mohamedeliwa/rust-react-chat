@@ -6,10 +6,28 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# postgresql setup
+# Primary crates
 actix = "0.13.0"
 actix-files = "0.6.2"
 actix-web = "4.2.1"
 actix-web-actors = "4.1.0"
-rand = "0.8.5"
-serde = "1.0.147"
+actix-cors = "0.6.4"
+sqlx = { version = "0.7.3", features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+    "time",
+    "uuid",
+] }
+
+# Important Secondary crates
+uuid = { version = "1.6.1", features = ["v4", "serde"] }
+serde = { version = "1.0.147", features = ["derive"] }
 serde_json = "1.0.88"
+rand = "0.8.5"
+time = { version = "0.3", features = ["macros", "serde"] }
+
+
+# Auxilliary crates
+dotenvy = "0.15.7"

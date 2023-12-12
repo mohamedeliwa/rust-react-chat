@@ -12,11 +12,13 @@ use sqlx::Postgres;
 use std::time::Instant;
 use uuid::Uuid;
 
+// TODO, ADD THE NEXTJS BUILD IN THIS PATH
 pub async fn index() -> impl Responder {
     NamedFile::open_async("./static/index.html").await.unwrap()
 }
 
 pub async fn chat_server(
+    user_id: web::Path<Uuid>,
     req: HttpRequest,
     stream: web::Payload,
     pool: web::Data<Pool<Postgres>>,
@@ -25,9 +27,8 @@ pub async fn chat_server(
     ws::start(
         session::WsChatSession {
             id: 0,
+            user_id: user_id.to_owned(),
             hb: Instant::now(),
-            room: "main".to_string(),
-            name: None,
             addr: srv.get_ref().clone(),
             db_pool: pool,
         },

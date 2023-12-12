@@ -10,25 +10,24 @@ mod server;
 mod session;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let server = server::ChatServer::new().start();
-
     // loading the database url from .env file
     let database_url = dotenvy::var("PG_URL").expect("DATABASE_URL must be set");
 
     // Creating a connection pool to the postgresql server
-    let sqlx_pool = PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
         .await
         .expect("couldn't create sqlx connection pool!");
 
+    let server = server::ChatServer::new(pool.clone()).start();
+
     // applying migrations to our db
     sqlx::migrate!("./migrations")
-        .run(&sqlx_pool)
+        .run(&pool)
         .await
         .expect("failed to migrate");
 
-    // let pool = sqlx_pool.clone();
     let server_addr = "127.0.0.1";
     let server_port = 8080;
     let app = HttpServer::new(move || {
@@ -41,11 +40,10 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .app_data(web::Data::new(server.clone()))
-            // .app_data(web::Data::new(pool.clone()))
-            .app_data(web::Data::new(sqlx_pool.clone()))
+            .app_data(web::Data::new(pool.clone()))
             .wrap(cors)
             .service(web::resource("/").to(routes::index))
-            .route("/ws", web::get().to(routes::chat_server))
+            .route("/ws/{user_id}", web::get().to(routes::chat_server))
             .service(routes::create_user)
             .service(routes::get_user_by_id)
             .service(routes::get_user_by_phone)

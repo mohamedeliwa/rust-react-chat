@@ -76,6 +76,21 @@ pub async fn insert_new_conversation(
     }
 }
 
+// finds room by id
+pub async fn find_room_by_uid(
+    conn: &Pool<Postgres>,
+    room_id: &Uuid,
+) -> Result<Option<Room>, DbError> {
+    match sqlx::query_as::<_, Room>("SELECT * FROM rooms WHERE id = $1;")
+        .bind(room_id)
+        .fetch_optional(conn)
+        .await
+    {
+        Ok(room) => return Ok(room),
+        Err(err) => return Err(Box::new(err)),
+    };
+}
+
 //  set up a query to fetch all the chat rooms and participants from the database:
 pub async fn get_all_rooms(conn: &Pool<Postgres>) -> Result<Vec<RoomResponse>, DbError> {
     let rooms_data: Vec<Room> = sqlx::query_as::<_, Room>("SELECT * FROM rooms;")

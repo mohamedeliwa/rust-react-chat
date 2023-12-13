@@ -32,6 +32,7 @@ pub struct ClientMessage {
     // ChatMessage struct converted into json string
     pub msg: String,
     pub room_id: Uuid,
+    pub user_id: Uuid,
 }
 
 pub struct ListRooms;
@@ -71,7 +72,7 @@ impl ChatServer {
     // I think this is done through the WsChatSession actor
     fn send_message(&self, room_data: Option<Room>, message: &str, skip_id: usize) {
         println!(
-            "ChatServer is sending a msg: {message} to room: {:? } from user {skip_id}",
+            "ChatServer is sending a msg: {message} to room: {:?} from user {skip_id}",
             room_data
         );
 
@@ -148,8 +149,10 @@ impl Handler<ClientMessage> for ChatServer {
         );
         let room_id = msg.room_id.clone();
         let db_pool = self.db_pool.clone();
-        let msg_id = msg.id.clone();
+        let session_id = msg.id.clone();
+        let user_id = msg.user_id.clone();
         let msg_content = msg.msg.clone();
+
         // https://docs.rs/actix/latest/actix/type.ResponseActFuture.html
         // returning a future from an actor message handler
         Box::pin(
@@ -163,8 +166,14 @@ impl Handler<ClientMessage> for ChatServer {
                     println!("{}", err.to_string());
                     return None;
                 } else if let Some(room_data) = room_data.unwrap() {
-                    // found the room
-                    Some(room_data)
+                    // checking if the msg sender is a participant in the room
+                    if room_data.participant_ids.contains(&user_id.to_string()) {
+                        // found the room
+                        Some(room_data)
+                    } else {
+                        // the sender is not a participant in the room
+                        None
+                    }
                 } else {
                     // room not found
                     None
@@ -174,7 +183,7 @@ impl Handler<ClientMessage> for ChatServer {
             .into_actor(self)
             .map(move |res, act, _ctx| {
                 // Do some computation with actor's state or context
-                act.send_message(res.clone(), &msg_content, msg_id);
+                act.send_message(res.clone(), &msg_content, session_id);
                 Ok(res)
             }),
         )

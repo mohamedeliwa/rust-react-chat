@@ -140,6 +140,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             msg,
                             room_id: Uuid::parse_str(&chat_msg.room_id)
                                 .expect("failed to parse chat_msg room_id"),
+                            user_id: self.user_id,
                         })
                     }
                     ChatType::TEXT => {
@@ -168,6 +169,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             msg,
                             room_id: Uuid::parse_str(&chat_msg.room_id)
                                 .expect("failed to parse chat_msg room_id"),
+                            user_id: self.user_id,
                         })
                     }
                     _ => {}

@@ -166,3 +166,24 @@ pub async fn get_rooms(pool: web::Data<Pool<Postgres>>) -> Result<HttpResponse, 
         }
     }
 }
+
+#[get("/rooms/{user_id}")]
+pub async fn get_rooms_for_user(
+    pool: web::Data<Pool<Postgres>>,
+    user_id: web::Path<Uuid>,
+) -> Result<HttpResponse, Error> {
+    let rooms = db::get_rooms_for_user(&pool, &user_id).await;
+    match rooms {
+        Ok(rooms) => Ok(HttpResponse::Ok().json(rooms)),
+        Err(err) => {
+            let res = HttpResponse::NotFound().body(
+                json!({
+                    "error": 404,
+                    "message": err.to_string(),
+                })
+                .to_string(),
+            );
+            Ok(res)
+        }
+    }
+}

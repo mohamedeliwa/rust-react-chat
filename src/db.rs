@@ -91,6 +91,32 @@ pub async fn find_room_by_uid(
     };
 }
 
+pub async fn get_rooms_for_user(
+    conn: &Pool<Postgres>,
+    user_id: &Uuid,
+) -> Result<Vec<RoomResponse>, DbError> {
+    let sql = format!(
+        "SELECT * FROM rooms WHERE participant_ids LIKE '%{}%';",
+        user_id
+    );
+
+    match sqlx::query_as::<_, Room>(&sql).fetch_all(conn).await {
+        Ok(rooms) => {
+            let mut response_rooms: Vec<RoomResponse> = vec![];
+            for room in rooms {
+                let room_users = get_users_of_a_room(&conn, &room).await.unwrap();
+
+                response_rooms.push(RoomResponse {
+                    users: room_users,
+                    room,
+                });
+            }
+            Ok(response_rooms)
+        }
+        Err(err) => Err(Box::new(err)),
+    }
+}
+
 //  set up a query to fetch all the chat rooms and participants from the database:
 pub async fn get_all_rooms(conn: &Pool<Postgres>) -> Result<Vec<RoomResponse>, DbError> {
     let rooms_data: Vec<Room> = sqlx::query_as::<_, Room>("SELECT * FROM rooms;")
@@ -162,4 +188,21 @@ pub async fn get_conversation_by_room_uid(
         Ok(results) => Ok(results),
         Err(err) => Err(Box::new(err)),
     };
+}
+
+
+pub async fn get_users_of_a_room(conn: &Pool<Postgres>, room: &Room) -> Result<Vec<User>, DbError> {
+    let sql = format!(
+        "SELECT * FROM users WHERE id IN({});",
+        room.participant_ids
+            .split(",")
+            .map(|id| format!("'{id}'"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
+
+    match sqlx::query_as::<_, User>(&sql).fetch_all(conn).await {
+        Ok(user) => Ok(user),
+        Err(err) => Err(Box::new(err)),
+    }
 }

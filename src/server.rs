@@ -1,4 +1,8 @@
-use crate::{db, models::Room};
+use crate::{
+    db,
+    models::{NewConversation, Room},
+    session::{ChatMessage, ChatType},
+};
 use actix::prelude::*;
 use rand::{self, rngs::ThreadRng, Rng};
 use sqlx::{Pool, Postgres};
@@ -152,6 +156,7 @@ impl Handler<ClientMessage> for ChatServer {
         let session_id = msg.id.clone();
         let user_id = msg.user_id.clone();
         let msg_content = msg.msg.clone();
+        let msg_content_1 = msg.msg.clone();
 
         // https://docs.rs/actix/latest/actix/type.ResponseActFuture.html
         // returning a future from an actor message handler
@@ -168,6 +173,21 @@ impl Handler<ClientMessage> for ChatServer {
                 } else if let Some(room_data) = room_data.unwrap() {
                     // checking if the msg sender is a participant in the room
                     if room_data.participant_ids.contains(&user_id.to_string()) {
+                        // the sender is a participant in the room
+
+                        // saving the msg in the database
+                        let msg_json = serde_json::from_str::<ChatMessage>(&msg_content_1)
+                            .expect("couldn't parse the msg");
+
+                        if msg_json.chat_type == ChatType::TEXT {
+                            let new_conversation = NewConversation {
+                                user_id,
+                                room_id,
+                                message: msg_json.value.join(""),
+                            };
+                            let _ = db::insert_new_conversation(&db_pool, new_conversation).await;
+                        }
+
                         // found the room
                         Some(room_data)
                     } else {

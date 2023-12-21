@@ -1,5 +1,5 @@
-use crate::db;
-use crate::models::NewConversation;
+// use crate::db;
+// use crate::models::NewConversation;
 use crate::server;
 use actix::prelude::*;
 use actix_web::web;
@@ -39,7 +39,7 @@ pub enum ChatType {
     DISCONNECT,
 }
 #[derive(Serialize, Deserialize)]
-struct ChatMessage {
+pub struct ChatMessage {
     pub chat_type: ChatType,
     pub value: Vec<String>,
     // TODO: convert it to Uuid
@@ -154,14 +154,14 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             room_id: input.room_id.to_string(),
                             user_id: self.user_id.to_string(),
                         };
-                        let conn = self.db_pool.clone();
-                        let new_conversation = NewConversation {
-                            user_id: self.user_id,
-                            room_id: Uuid::parse_str(&input.room_id)
-                                .expect("failed to parse room_id"),
-                            message: input.value.join(""),
-                        };
-                        let _ = db::insert_new_conversation(&conn, new_conversation);
+                        // let conn = self.db_pool.clone();
+                        // let new_conversation = NewConversation {
+                        //     user_id: self.user_id,
+                        //     room_id: Uuid::parse_str(&input.room_id)
+                        //         .expect("failed to parse room_id"),
+                        //     message: input.value.join(""),
+                        // };
+                        // let _ = db::insert_new_conversation(&conn, new_conversation);
                         let msg = serde_json::to_string(&chat_msg).unwrap();
                         self.addr.do_send(server::ClientMessage {
                             id: self.id,

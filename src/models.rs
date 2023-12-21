@@ -36,6 +36,19 @@ pub struct NewConversation {
     pub room_id: Uuid,
     pub message: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NewRoom {
+    pub name: String,
+    pub last_message: String,
+    pub participant_ids: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateRoomDto {
+    pub phone: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoomResponse {
     pub room: Room,

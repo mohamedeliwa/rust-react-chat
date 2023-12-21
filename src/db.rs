@@ -1,4 +1,4 @@
-use crate::models::{Conversation, NewConversation, Room, RoomResponse, User};
+use crate::models::{Conversation, NewConversation, NewRoom, Room, RoomResponse, User};
 use sqlx::{Pool, Postgres};
 use std::collections::{HashMap, HashSet};
 use uuid::Uuid;
@@ -80,6 +80,22 @@ pub async fn insert_new_conversation(
     }
 }
 
+//  creates new room between two users.
+pub async fn create_room(conn: &Pool<Postgres>, new_room: NewRoom) -> Result<Room, DbError> {
+    match sqlx::query_as::<_, Room>(
+        "INSERT INTO rooms (name, last_message, participant_ids) VALUES ($1, $2, $3) RETURNING *;",
+    )
+    .bind(new_room.name)
+    .bind(new_room.last_message)
+    .bind(new_room.participant_ids)
+    .fetch_one(conn)
+    .await
+    {
+        Ok(new_room) => Ok(new_room),
+        Err(err) => Err(Box::new(err)),
+    }
+}
+
 // finds room by id
 pub async fn find_room_by_uid(
     conn: &Pool<Postgres>,
@@ -96,6 +112,9 @@ pub async fn find_room_by_uid(
 }
 
 // updates the message of a room by id
+// it's meant to be private cause it's missing
+// the ability to update room columns dynamically
+// currently it updates only the last message of a room
 async fn update_room_by_uid(
     conn: &Pool<Postgres>,
     last_msg: &str,

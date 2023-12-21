@@ -1,5 +1,7 @@
 use crate::db;
 use crate::models;
+use crate::models::CreateRoomDto;
+use crate::models::NewRoom;
 use crate::server;
 use crate::session;
 use actix::*;
@@ -180,6 +182,65 @@ pub async fn get_rooms_for_user(
                 json!({
                     "error": 404,
                     "message": err.to_string(),
+                })
+                .to_string(),
+            );
+            Ok(res)
+        }
+    }
+}
+
+#[post("/rooms/{user_id}")]
+pub async fn create_room(
+    conn: web::Data<Pool<Postgres>>,
+    user_id: web::Path<Uuid>,
+    body: web::Json<CreateRoomDto>,
+) -> Result<HttpResponse, Error> {
+    let body = body.to_owned();
+    let user = db::find_user_by_phone(&conn, body.phone.clone()).await;
+
+    match user {
+        Ok(user) => match user {
+            Some(user) => {
+                let room = db::create_room(
+                    &conn,
+                    NewRoom {
+                        name: "room".to_string(),
+                        last_message: "".to_string(),
+                        participant_ids: format!("{user_id},{}", user.id),
+                    },
+                )
+                .await;
+                match room {
+                    Ok(room) => Ok(HttpResponse::Ok().json(room)),
+                    Err(err) => {
+                        let res = HttpResponse::NotFound().body(
+                            json!({
+                                "error": 400,
+                                "message": err.to_string()
+                            })
+                            .to_string(),
+                        );
+                        Ok(res)
+                    }
+                }
+            }
+            None => {
+                let res = HttpResponse::NotFound().body(
+                    json!({
+                        "error": 404,
+                        "message": format!("No user found with phone: {}", body.phone.clone())
+                    })
+                    .to_string(),
+                );
+                Ok(res)
+            }
+        },
+        Err(err) => {
+            let res = HttpResponse::NotFound().body(
+                json!({
+                    "error": 404,
+                    "message": err.to_string()
                 })
                 .to_string(),
             );

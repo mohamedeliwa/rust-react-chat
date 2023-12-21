@@ -132,7 +132,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             value: input.value.to_vec(),
                             id: self.id,
                             room_id: input.room_id.to_string(),
-                            user_id: input.user_id.to_string(),
+                            user_id: self.user_id.to_string(),
                         };
                         let msg = serde_json::to_string(&chat_msg).unwrap();
                         self.addr.do_send(server::ClientMessage {
@@ -152,12 +152,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             value: input.value.to_vec(),
                             id: self.id,
                             room_id: input.room_id.to_string(),
-                            user_id: input.user_id.to_string(),
+                            user_id: self.user_id.to_string(),
                         };
                         let conn = self.db_pool.clone();
                         let new_conversation = NewConversation {
-                            user_id: Uuid::parse_str(&input.user_id)
-                                .expect("failed to parse user_id"),
+                            user_id: self.user_id,
                             room_id: Uuid::parse_str(&input.room_id)
                                 .expect("failed to parse room_id"),
                             message: input.value.join(""),

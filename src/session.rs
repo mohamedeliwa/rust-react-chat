@@ -154,14 +154,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             room_id: input.room_id.to_string(),
                             user_id: self.user_id.to_string(),
                         };
-                        // let conn = self.db_pool.clone();
-                        // let new_conversation = NewConversation {
-                        //     user_id: self.user_id,
-                        //     room_id: Uuid::parse_str(&input.room_id)
-                        //         .expect("failed to parse room_id"),
-                        //     message: input.value.join(""),
-                        // };
-                        // let _ = db::insert_new_conversation(&conn, new_conversation);
                         let msg = serde_json::to_string(&chat_msg).unwrap();
                         self.addr.do_send(server::ClientMessage {
                             id: self.id,

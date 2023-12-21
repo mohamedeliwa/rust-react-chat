@@ -71,7 +71,11 @@ pub async fn insert_new_conversation(
     .fetch_one(conn)
     .await
     {
-        Ok(new_conversation) => Ok(new_conversation),
+        Ok(new_conversation) => {
+            let _ = update_room_by_uid(conn, &new_conversation.content, &new_conversation.room_id)
+                .await;
+            Ok(new_conversation)
+        }
         Err(err) => Err(Box::new(err)),
     }
 }
@@ -82,6 +86,23 @@ pub async fn find_room_by_uid(
     room_id: &Uuid,
 ) -> Result<Option<Room>, DbError> {
     match sqlx::query_as::<_, Room>("SELECT * FROM rooms WHERE id = $1;")
+        .bind(room_id)
+        .fetch_optional(conn)
+        .await
+    {
+        Ok(room) => return Ok(room),
+        Err(err) => return Err(Box::new(err)),
+    };
+}
+
+// updates the message of a room by id
+async fn update_room_by_uid(
+    conn: &Pool<Postgres>,
+    last_msg: &str,
+    room_id: &Uuid,
+) -> Result<Option<Room>, DbError> {
+    match sqlx::query_as::<_, Room>("UPDATE rooms SET last_message = $1 WHERE id = $2;")
+        .bind(format!("{}", last_msg))
         .bind(room_id)
         .fetch_optional(conn)
         .await
@@ -189,7 +210,6 @@ pub async fn get_conversation_by_room_uid(
         Err(err) => Err(Box::new(err)),
     };
 }
-
 
 pub async fn get_users_of_a_room(conn: &Pool<Postgres>, room: &Room) -> Result<Vec<User>, DbError> {
     let sql = format!(

@@ -82,6 +82,15 @@ pub async fn insert_new_conversation(
 
 //  creates new room between two users.
 pub async fn create_room(conn: &Pool<Postgres>, new_room: NewRoom) -> Result<Room, DbError> {
+    // checking if the two users already have a chat room.
+    let room = get_rooms_by_participants(&conn, &new_room.participant_ids).await;
+    if room.is_ok() {
+        println!("executed while it mustn't!");
+        return Err(Box::new(sqlx::Error::ColumnNotFound(
+            "room is already created!".into(),
+        )));
+    }
+
     match sqlx::query_as::<_, Room>(
         "INSERT INTO rooms (name, last_message, participant_ids) VALUES ($1, $2, $3) RETURNING *;",
     )
@@ -129,6 +138,21 @@ async fn update_room_by_uid(
         Ok(room) => return Ok(room),
         Err(err) => return Err(Box::new(err)),
     };
+}
+
+pub async fn get_rooms_by_participants(
+    conn: &Pool<Postgres>,
+    participant_ids: &String,
+) -> Result<Room, DbError> {
+    let sql = format!(
+        "SELECT * FROM rooms WHERE participant_ids = '{}';",
+        participant_ids
+    );
+
+    match sqlx::query_as::<_, Room>(&sql).fetch_one(conn).await {
+        Ok(room) => Ok(room),
+        Err(err) => Err(Box::new(err)),
+    }
 }
 
 pub async fn get_rooms_for_user(

@@ -1,0 +1,15 @@
+.container {
+  background-color: rgb(59, 130, 246);
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+}
+
+.content {
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+}

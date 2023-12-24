@@ -1,0 +1,27 @@
+.chat_board {
+  padding: 1rem;
+  overflow: auto;
+}
+
+.item_container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.text_container {
+  max-width: 65%;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 12px;
+}
+
+.text {
+  color: white;
+}
+
+.avatar_container {
+  margin-top: auto;
+}

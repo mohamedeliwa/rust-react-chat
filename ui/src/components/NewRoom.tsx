@@ -37,6 +37,16 @@ const NewRoom: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {open && (
+        <input
+          value={phone}
+          onChange={(e) => {
+            const value = e.target.value;
+            setPhone(value);
+          }}
+          className={`${styles.base_input} ${styles.input}`}
+        />
+      )}
       {!open ? (
         <button
           onClick={() => setOpen(true)}
@@ -62,18 +72,6 @@ const NewRoom: React.FC = () => {
             Cancel
           </button>
         </>
-      )}
-      {open && (
-        <form>
-          <input
-            value={phone}
-            onChange={(e) => {
-              const value = e.target.value;
-              setPhone(value);
-            }}
-            className={`${styles.base_input} ${styles.input}`}
-          />
-        </form>
       )}
     </div>
   );

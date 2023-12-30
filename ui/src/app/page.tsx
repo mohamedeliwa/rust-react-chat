@@ -29,8 +29,14 @@ import styles from "./page.module.css";
  * 
  */
 
+interface Room {
+  id: string;
+  name: string;
+  users: string;
+}
+
 export default function Home() {
-  const [room, setSelectedRoom] = useState<string | null>(null);
+  const [room, setSelectedRoom] = useState<Room | null>(null);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [showLogIn, setShowLogIn] = useState<boolean>(false);
   const [auth, setAuthUser] = useLocalStorage("user", false);
@@ -79,7 +85,7 @@ export default function Home() {
       id: 0,
       chat_type: "TYPING",
       value: ["IN"],
-      room_id: room.id,
+      room_id: room?.id,
       user_id: auth.id,
     };
     sendMessage(JSON.stringify(data));
@@ -89,7 +95,7 @@ export default function Home() {
       id: 0,
       chat_type: "TYPING",
       value: ["OUT"],
-      room_id: room.id,
+      room_id: room?.id,
       user_id: auth.id,
     };
     sendMessage(JSON.stringify(data));
@@ -100,7 +106,7 @@ export default function Home() {
     if (message === "") {
       return;
     }
-    if (!room.id) {
+    if (!room?.id) {
       alert("Please select chat room!");
       return;
     }
@@ -108,7 +114,7 @@ export default function Home() {
       id: 0,
       chat_type: "TEXT",
       value: [message],
-      room_id: room.id,
+      room_id: room?.id,
       user_id: auth.id,
     };
     sendMessage(JSON.stringify(data));
@@ -151,7 +157,7 @@ export default function Home() {
               <section className={styles.room_body}>
                 <div className={styles.room_banner}>
                   <div className={styles.avatar}>
-                    <Avatar color="rgb(245 158 11)">
+                    <Avatar bgcolor="rgb(245 158 11)">
                       {room.users.get_target_user(auth.id)}
                     </Avatar>
                     <div>

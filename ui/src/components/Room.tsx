@@ -69,15 +69,8 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
   );
 };
 
-export interface OnChatChangeProps extends Omit<Room, "users"> {
-  users: {
-    get: (id: string) => any;
-    get_target_user: (id: string) => string;
-  };
-}
-
 interface ChatListProps {
-  onChatChange: (data: OnChatChangeProps) => void;
+  onChatChange: (data: Room) => void;
   userId: string;
 }
 const ChatList: React.FC<ChatListProps> = ({ onChatChange, userId }) => {
@@ -93,22 +86,7 @@ const ChatList: React.FC<ChatListProps> = ({ onChatChange, userId }) => {
   }, []);
   const onSelectedChat = (idx: number, item: { room: Room; users: User[] }) => {
     setSelectedItem(idx);
-    let mapUsers = new Map();
-    item.users.forEach((el) => {
-      mapUsers.set(el.id, el);
-    });
-    const users = {
-      get: (id: string) => {
-        return mapUsers.get(id)?.username;
-      },
-      get_target_user: (id: string) => {
-        return item.users
-          .filter((el) => el.id != id)
-          .map((el) => el.username)
-          .join("");
-      },
-    };
-    onChatChange({ ...item.room, users });
+    onChatChange({ ...item.room, users: item.users });
   };
   return (
     <div className={styles.chat_rooms_container}>

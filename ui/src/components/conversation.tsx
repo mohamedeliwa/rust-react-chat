@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Avatar from "./Avatar";
 import styles from "./conversation.module.css";
+import { User } from "./Room";
 
 const ConversationItem: React.FC<any> = ({ right, content, username }) => {
   if (right) {
@@ -52,7 +53,7 @@ const ConversationItem: React.FC<any> = ({ right, content, username }) => {
 interface ConversationProps {
   data: any;
   auth: any;
-  users: any;
+  users: User[];
 }
 
 const Conversation: React.FC<ConversationProps> = ({ data, auth, users }) => {
@@ -67,7 +68,7 @@ const Conversation: React.FC<ConversationProps> = ({ data, auth, users }) => {
           <ConversationItem
             right={item.user_id === auth.id}
             content={item.content}
-            username={users.get(item.user_id)}
+            username={users.find((user) => user.id == item.user_id)?.username}
             key={`${item.id} ${Math.random()} `}
           />
         );

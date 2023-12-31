@@ -15,16 +15,8 @@ interface Props {
 
 const Avatar: React.FC<Props> = ({ children, bgcolor = "" }) => {
   return (
-    <div
-      className={styles.container}
-      // className="bg-blue-500 w-[45px] h-[45px] flex items-center justify-center rounded-full"
-      style={{ backgroundColor: bgcolor }}
-    >
-      <span
-        className={styles.content} /* className="font-bold text-sm text-white"*/
-      >
-        {getShortName(children)}
-      </span>
+    <div className={styles.container} style={{ backgroundColor: bgcolor }}>
+      <span className={styles.content}>{getShortName(children)}</span>
     </div>
   );
 };

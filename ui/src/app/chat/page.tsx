@@ -1,7 +1,7 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import Avatar from "@/components/Avatar";
-import ChatList, { OnChatChangeProps, Room } from "@/components/Room";
+import ChatList, { Room } from "@/components/Room";
 import Conversation from "@/components/conversation";
 import useConversations from "@/libs/useConversation";
 import useLocalStorage from "@/libs/useLocalStorage";
@@ -30,7 +30,7 @@ import Head from "next/head";
 
 const Chat = () => {
   const router = useRouter();
-  const [room, setSelectedRoom] = useState<OnChatChangeProps | null>(null);
+  const [room, setSelectedRoom] = useState<Room | null>(null);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [auth, setAuthUser] = useLocalStorage("user", false);
   const { isLoading, messages, setMessages, fetchConversations } =
@@ -123,7 +123,7 @@ const Chat = () => {
     onFocusChange();
   };
 
-  const updateMessages = (data: OnChatChangeProps) => {
+  const updateMessages = (data: Room) => {
     if (!data.id) return;
     fetchConversations(data.id);
     setSelectedRoom(data);
@@ -155,11 +155,17 @@ const Chat = () => {
             <div className={styles.room_banner}>
               <div className={styles.avatar}>
                 <Avatar bgcolor="rgb(245 158 11)">
-                  {room.users.get_target_user(auth.id)}
+                  {room.users
+                    .filter((user) => user.id != auth.id)
+                    .map((user) => user.username)
+                    .join("")}
                 </Avatar>
                 <div>
                   <p className={styles.target_user}>
-                    {room.users.get_target_user(auth.id)}
+                    {room.users
+                      .filter((user) => user.id != auth.id)
+                      .map((user) => user.username)
+                      .join("")}
                   </p>
                   <div className={styles.banner_time}>
                     {isTyping ? "Typing..." : "10:15 AM"}

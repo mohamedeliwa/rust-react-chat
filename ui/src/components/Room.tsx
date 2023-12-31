@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Avatar from "./Avatar";
 import styles from "./Room.module.css";
+import useDateParser from "@/libs/useDateParser";
 
 async function getRooms() {
   try {
@@ -44,13 +45,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
 }) => {
   const { users, created_at, last_message } = room;
   const active = index == selectedItem;
-  const isoDateFormat = created_at.split(" ").reduce((prev, current, index) => {
-    if (index === 0) {
-      return prev + "T" + current;
-    }
-    return prev;
-  });
-  const date = new Date(isoDateFormat);
+  const date = useDateParser(created_at);
 
   const ampm = date.getHours() >= 12 ? "PM" : "AM";
   const time = `${date.getHours()}:${date.getMinutes()} ${ampm}`;

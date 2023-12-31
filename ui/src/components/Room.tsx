@@ -44,7 +44,14 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
 }) => {
   const { users, created_at, last_message } = room;
   const active = index == selectedItem;
-  const date = new Date(created_at);
+  const isoDateFormat = created_at.split(" ").reduce((prev, current, index) => {
+    if (index === 0) {
+      return prev + "T" + current;
+    }
+    return prev;
+  });
+  const date = new Date(isoDateFormat);
+
   const ampm = date.getHours() >= 12 ? "PM" : "AM";
   const time = `${date.getHours()}:${date.getMinutes()} ${ampm}`;
   const name = users

@@ -14,13 +14,13 @@ async function getRooms() {
   }
 }
 
-interface User {
+export interface User {
   id: string;
   username: string;
   phone: string;
 }
 
-interface Room {
+export interface Room {
   id: string;
   users: User[];
   created_at: string;
@@ -55,48 +55,29 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
       onClick={() => onSelect(index, {})}
       className={`${styles.chat_room} ${active ? styles.active_chat_room : ""}`}
     >
-      {/* <div className="flex justify-between items-center gap-3"> */}
-      <div
-        className={styles.avatar_title_container}
-        // className="flex gap-3 items-center w-full"
-      >
+      <div className={styles.avatar_title_container}>
         <Avatar>{name}</Avatar>
-        <div
-          //  className="w-full max-w-[150px]"
-          className={styles.title_container}
-        >
-          <h3
-            //  className="font-semibold text-sm text-gray-700"
-            className={styles.title}
-          >
-            {name}
-          </h3>
-          <p
-            className={styles.last_message}
-            //  className="font-light text-xs text-gray-600 truncate"
-          >
-            {last_message}
-          </p>
+        <div className={styles.title_container}>
+          <h3 className={styles.title}>{name}</h3>
+          <p className={styles.last_message}>{last_message}</p>
         </div>
       </div>
-      <div
-        className={styles.time_container}
-        //  className="text-gray-400 min-w-[55px]"
-      >
-        <span
-          // className="text-xs"
-          className={styles.time}
-        >
-          {time}
-        </span>
+      <div className={styles.time_container}>
+        <span className={styles.time}>{time}</span>
       </div>
-      {/* </div> */}
     </div>
   );
 };
 
+export interface OnChatChangeProps extends Omit<Room, "users"> {
+  users: {
+    get: (id: string) => any;
+    get_target_user: (id: string) => string;
+  };
+}
+
 interface ChatListProps {
-  onChatChange: Function;
+  onChatChange: (data: OnChatChangeProps) => void;
   userId: string;
 }
 const ChatList: React.FC<ChatListProps> = ({ onChatChange, userId }) => {
@@ -130,10 +111,7 @@ const ChatList: React.FC<ChatListProps> = ({ onChatChange, userId }) => {
     onChatChange({ ...item.room, users });
   };
   return (
-    <div
-      className={styles.chat_rooms_container}
-      // className="overflow-hidden space-y-3"
-    >
+    <div className={styles.chat_rooms_container}>
       {isLoading && <p>Loading chat lists.</p>}
       {data.map((item, index) => {
         return (

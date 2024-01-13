@@ -2,13 +2,21 @@
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import Login from "../components/Login";
-import useLocalStorage from "../libs/useLocalStorage";
 import { useRouter } from "next/navigation";
+import useUser from "@/libs/useUser";
+import { User } from "@/components/Room";
 
 export default function Home() {
   const router = useRouter();
   const [showLogIn, setShowLogIn] = useState<boolean>(false);
-  const [auth, setAuthUser] = useLocalStorage("user", false);
+  const auth = useUser();
+  const setAuthUser = (user: User) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("user", JSON.stringify(user));
+      router.push("chat");
+    }
+  };
+
   if (auth) {
     router.push("chat");
   }

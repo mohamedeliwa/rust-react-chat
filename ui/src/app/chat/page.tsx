@@ -1,15 +1,15 @@
 "use client";
 import React, { useCallback, useState } from "react";
 import Avatar from "@/components/Avatar";
-import ChatList, { Room } from "@/components/Room";
+import ChatList, { Room, User } from "@/components/Room";
 import Conversation from "@/components/conversation";
 import useConversations from "@/libs/useConversation";
-import useLocalStorage from "@/libs/useLocalStorage";
 import useWebsocket from "@/libs/useWebsocket";
 import NewRoom from "@/components/NewRoom";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
+import useUser from "@/libs/useUser";
 
 /**
  * 
@@ -32,7 +32,13 @@ const Chat = () => {
   const router = useRouter();
   const [room, setSelectedRoom] = useState<Room | null>(null);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [auth, setAuthUser] = useLocalStorage("user", false);
+  const value = useUser();
+  if (!value) {
+    router.push("/");
+  }
+  const authenticatedUser = value as User;
+
+  // const authenticatedUser = JSON.parse(auth as string) as User;
   const { isLoading, messages, setMessages, fetchConversations } =
     useConversations("");
 
@@ -79,7 +85,7 @@ const Chat = () => {
       chat_type: "TYPING",
       value: ["IN"],
       room_id: room?.id,
-      user_id: auth.id,
+      user_id: authenticatedUser.id,
     };
     sendMessage(JSON.stringify(data));
   };
@@ -89,7 +95,7 @@ const Chat = () => {
       chat_type: "TYPING",
       value: ["OUT"],
       room_id: room?.id,
-      user_id: auth.id,
+      user_id: authenticatedUser.id,
     };
     sendMessage(JSON.stringify(data));
   };
@@ -115,11 +121,11 @@ const Chat = () => {
       chat_type: "TEXT",
       value: [message],
       room_id: room?.id,
-      user_id: auth.id,
+      user_id: authenticatedUser.id,
     };
     sendMessage(JSON.stringify(data));
     target.message.value = "";
-    handleMessage(message, auth.id);
+    handleMessage(message, authenticatedUser.id);
     onFocusChange();
   };
 
@@ -130,7 +136,6 @@ const Chat = () => {
   };
   const signOut = () => {
     window.localStorage.removeItem("user");
-    setAuthUser(false);
     router.push("/");
   };
 
@@ -143,7 +148,10 @@ const Chat = () => {
       </Head>
       <main className={styles.main}>
         <aside className={styles.aside}>
-          <ChatList onChatChange={updateMessages} userId={auth.id} />
+          <ChatList
+            onChatChange={updateMessages}
+            userId={authenticatedUser.id}
+          />
 
           <NewRoom />
           <button onClick={signOut} className={styles.signout}>
@@ -156,14 +164,14 @@ const Chat = () => {
               <div className={styles.avatar}>
                 <Avatar bgcolor="rgb(245 158 11)">
                   {room.users
-                    .filter((user) => user.id != auth.id)
+                    .filter((user) => user.id !== authenticatedUser.id)
                     .map((user) => user.username)
                     .join("")}
                 </Avatar>
                 <div>
                   <p className={styles.target_user}>
                     {room.users
-                      .filter((user) => user.id != auth.id)
+                      .filter((user) => user.id !== authenticatedUser.id)
                       .map((user) => user.username)
                       .join("")}
                   </p>
@@ -189,7 +197,11 @@ const Chat = () => {
                 Loading conversation...
               </p>
             )}
-            <Conversation data={messages} auth={auth} users={room.users} />
+            <Conversation
+              data={messages}
+              auth={authenticatedUser}
+              users={room.users}
+            />
             <div className="w-full">
               <form onSubmit={submitMessage} className={styles.form}>
                 <input

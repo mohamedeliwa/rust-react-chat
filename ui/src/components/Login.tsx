@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./Login.module.css";
+import FormCreateUsername from "./Signup";
 
 interface Props {
   show: boolean;
@@ -11,55 +12,7 @@ const Login: React.FC<Props> = ({ show, setAuth }) => {
   const showSignIn = () => {
     setShowSignIn((prev) => !prev);
   };
-  const FormCreateUsername = ({ setAuth }: { setAuth: Function }) => {
-    const onCreateUsername = async (e: any) => {
-      e.preventDefault();
-      let username = e.target.username.value;
-      let phone = e.target.phone.value;
-      if (username === "" || phone === "") {
-        return;
-      }
-      let res = await createAccount({ username, phone });
-      if (res === null) {
-        alert("Failed to create account");
-        return;
-      }
-      setAuth(res);
-    };
-    return (
-      <form action="" className={styles.form} onSubmit={onCreateUsername}>
-        <div className={styles.form_item}>
-          <label className={styles.label}>Username</label>
-          <input
-            required
-            type="text"
-            name="username"
-            placeholder="John Doe"
-            className={styles.input}
-          />
-        </div>
-        <div className={styles.form_item}>
-          <label className={styles.label}>Phone</label>
-          <input
-            required
-            type="text"
-            name="phone"
-            placeholder="+1111..."
-            className={styles.input}
-          />
-        </div>
-        <div className={`${styles.submit} ${styles.form_item}`}>
-          <button type="submit">Submit</button>
-        </div>
-        <div className={`${styles.signIn} ${styles.form_item}`}>
-          <p>
-            Already have a username?{" "}
-            <button onClick={showSignIn}>Sign In</button>
-          </p>
-        </div>
-      </form>
-    );
-  };
+
   const FormSignIn = ({ setAuth }: { setAuth: Function }) => {
     const onSignIn = async (e: any) => {
       e.preventDefault();
@@ -110,7 +63,7 @@ const Login: React.FC<Props> = ({ show, setAuth }) => {
         {isShowSigIn ? (
           <FormSignIn setAuth={setAuth} />
         ) : (
-          <FormCreateUsername setAuth={setAuth} />
+          <FormCreateUsername setAuth={setAuth} setShowSignIn={setShowSignIn} />
         )}
       </div>
     </div>
@@ -119,27 +72,6 @@ const Login: React.FC<Props> = ({ show, setAuth }) => {
 
 export default Login;
 
-async function createAccount({
-  username,
-  phone,
-}: {
-  username: string;
-  phone: string;
-}) {
-  try {
-    const url = "http://localhost:8080/users/create";
-    let result = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, phone }),
-    });
-    return result.json();
-  } catch (e) {
-    return Promise.reject(e);
-  }
-}
 async function signIn({ phone }: { phone: string }) {
   try {
     const url = "http://localhost:8080/users/phone/" + phone;

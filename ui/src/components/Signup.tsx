@@ -1,13 +1,14 @@
+import { useRouter } from "next/navigation";
 import styles from "./Login.module.css";
 
 interface Props {
   setAuth: Function;
-  setShowSignIn: Function;
 }
 
-const Signup: React.FC<Props> = ({ setAuth, setShowSignIn }) => {
+const Signup: React.FC<Props> = ({ setAuth }) => {
+  const router = useRouter();
   const showSignIn = () => {
-    setShowSignIn((prev: boolean) => !prev);
+    router.push("/");
   };
 
   const onCreateUsername = async (e: any) => {

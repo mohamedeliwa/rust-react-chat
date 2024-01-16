@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: linear-gradient(#fb923c, #fb7185);
+  }
+  
+  .form_container {
+    padding: 1.5rem 2rem;
+    margin: 1rem auto;
+    text-align: left;
+    background-color: white;
+    max-width: 400px;
+    width: 100%;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  .title {
+    color: rgb(30 41 59);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }

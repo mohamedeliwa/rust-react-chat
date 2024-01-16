@@ -4,6 +4,7 @@ import styles from "./Login.module.css";
 import Link from "next/link";
 import { User } from "./Room";
 import { useRouter } from "next/navigation";
+import user from "@/api/user";
 
 interface Props {}
 
@@ -24,12 +25,12 @@ const Signup: React.FC<Props> = ({}) => {
     if (username === "" || phone === "") {
       return;
     }
-    let res = await createAccount({ username, phone });
-    if (res === null) {
-      alert("Failed to create account");
-      return;
+    try {
+      let userObj = await user.create({ username, phone });
+      setAuth(userObj);
+    } catch (error: any) {
+      alert(error.message);
     }
-    setAuth(res);
   };
 
   return (
@@ -67,25 +68,3 @@ const Signup: React.FC<Props> = ({}) => {
 };
 
 export default Signup;
-
-async function createAccount({
-  username,
-  phone,
-}: {
-  username: string;
-  phone: string;
-}) {
-  try {
-    const url = "http://localhost:8080/users/create";
-    let result = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, phone }),
-    });
-    return result.json();
-  } catch (e) {
-    return Promise.reject(e);
-  }
-}

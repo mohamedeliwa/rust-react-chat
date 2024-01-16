@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import styles from "./NewRoom.module.css";
 
@@ -28,8 +30,10 @@ const NewRoom: React.FC = () => {
         return;
       }
 
-      // reload to fetch the newly updated room list
-      window.location.reload();
+      // // reload to fetch the newly updated room list
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
     } catch (error) {
       console.log({ error });
     }

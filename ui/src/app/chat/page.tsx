@@ -40,7 +40,7 @@ const Chat = () => {
 
   // const authenticatedUser = JSON.parse(auth as string) as User;
   const { isLoading, messages, setMessages, fetchConversations } =
-    useConversations("");
+    useConversations();
 
   const handleTyping = (mode: string) => {
     if (mode === "IN") {

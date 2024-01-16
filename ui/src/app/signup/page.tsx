@@ -11,7 +11,7 @@ type Props = {};
 const Signup = (props: Props) => {
   const router = useRouter();
 
-  const user = useUser();
+  const { user } = useUser();
 
   if (user) {
     router.push("chat");

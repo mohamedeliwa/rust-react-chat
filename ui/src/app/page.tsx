@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 
 export default function Home() {
   const router = useRouter();
-  const user = useUser();
+  const { user } = useUser();
 
   if (user) {
     router.push("chat");

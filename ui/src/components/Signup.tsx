@@ -2,21 +2,13 @@
 
 import styles from "./Login.module.css";
 import Link from "next/link";
-import { User } from "./Room";
-import { useRouter } from "next/navigation";
 import user from "@/api/user";
+import useUser from "@/libs/useUser";
 
 interface Props {}
 
 const Signup: React.FC<Props> = ({}) => {
-  const router = useRouter();
-
-  const setAuth = (user: User) => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("user", JSON.stringify(user));
-      router.push("chat");
-    }
-  };
+  const { setUser } = useUser();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -27,7 +19,7 @@ const Signup: React.FC<Props> = ({}) => {
     }
     try {
       let userObj = await user.create({ username, phone });
-      setAuth(userObj);
+      setUser(userObj);
     } catch (error: any) {
       alert(error.message);
     }

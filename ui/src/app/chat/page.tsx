@@ -35,12 +35,12 @@ const Chat = () => {
   const value = useUser();
 
   useEffect(() => {
-    if (!value) {
+    if (!value.user) {
       router.replace("/");
     }
-  }, [router, value]);
+  }, [router, value.user]);
 
-  const authenticatedUser = value as User;
+  const authenticatedUser = value.user as User;
 
   // const authenticatedUser = JSON.parse(auth as string) as User;
   const { isLoading, messages, setMessages, fetchConversations } =

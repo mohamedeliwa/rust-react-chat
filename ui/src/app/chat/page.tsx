@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Avatar from "@/components/Avatar";
 import ChatList, { Room, User } from "@/components/Room";
 import Conversation from "@/components/conversation";
@@ -33,9 +33,13 @@ const Chat = () => {
   const [room, setSelectedRoom] = useState<Room | null>(null);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const value = useUser();
-  if (!value) {
-    router.push("/");
-  }
+
+  useEffect(() => {
+    if (!value) {
+      router.replace("/");
+    }
+  }, [router, value]);
+
   const authenticatedUser = value as User;
 
   // const authenticatedUser = JSON.parse(auth as string) as User;
@@ -150,7 +154,7 @@ const Chat = () => {
         <aside className={styles.aside}>
           <ChatList
             onChatChange={updateMessages}
-            userId={authenticatedUser.id}
+            userId={authenticatedUser?.id}
           />
 
           <NewRoom />

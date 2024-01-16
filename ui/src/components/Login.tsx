@@ -1,73 +1,65 @@
-import { useState } from "react";
+"use client";
+
+import Link from "next/link";
 import styles from "./Login.module.css";
-import FormCreateUsername from "./Signup";
+import { User } from "./Room";
+import { useRouter } from "next/navigation";
 
-interface Props {
-  show: boolean;
-  setAuth: Function;
-}
+interface Props {}
 
-const Login: React.FC<Props> = ({ show, setAuth }) => {
-  const [isShowSigIn, setShowSignIn] = useState(false);
-  const showSignIn = () => {
-    setShowSignIn((prev) => !prev);
+const Login: React.FC<Props> = ({}) => {
+  const router = useRouter();
+
+  const setAuth = (user: User) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("user", JSON.stringify(user));
+      router.push("chat");
+    }
   };
 
-  const FormSignIn = ({ setAuth }: { setAuth: Function }) => {
-    const onSignIn = async (e: any) => {
-      e.preventDefault();
-      let phone = e.target.phone.value;
-      if (phone === "") {
-        return;
-      }
-      let res = await signIn({ phone });
-      if (res === null) {
-        alert("Failed to create account");
-        return;
-      }
-      if (!res.id) {
-        alert(`Phone number not found ${phone}`);
-        return;
-      }
-      setAuth(res);
-    };
-    return (
-      <form action="" className={styles.form} onSubmit={onSignIn}>
-        <div>
-          <label className={styles.label}>Phone</label>
-          <input
-            required
-            type="text"
-            name="phone"
-            placeholder="+1111..."
-            className={styles.input}
-          />
-        </div>
-        <div className={styles.submit}>
-          <button type="submit">Submit</button>
-        </div>
-        <div className={styles.signIn}>
-          <p>
-            Do not have username? <button onClick={showSignIn}>Create</button>
-          </p>
-        </div>
-      </form>
-    );
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    let phone = e.target.phone.value;
+    if (phone === "") {
+      return;
+    }
+    let res = await signIn({ phone });
+    if (res === null) {
+      alert("Failed to create account");
+      return;
+    }
+    if (!res.id) {
+      alert(`Phone number not found ${phone}`);
+      return;
+    }
+    setAuth(res);
   };
-  return show ? (
-    <div className={styles.container}>
-      <div className={styles.form_container}>
-        <h3 className={styles.title}>
-          {isShowSigIn ? "Log in with your phone." : "Create your account."}
-        </h3>
-        {isShowSigIn ? (
-          <FormSignIn setAuth={setAuth} />
-        ) : (
-          <FormCreateUsername setAuth={setAuth} setShowSignIn={setShowSignIn} />
-        )}
+
+  return (
+    <form action="" className={styles.form} onSubmit={handleSubmit}>
+      <div>
+        <label className={styles.label}>Phone</label>
+        <input
+          required
+          type="text"
+          name="phone"
+          placeholder="+1111..."
+          className={styles.input}
+        />
       </div>
-    </div>
-  ) : null;
+      <div className={styles.submit}>
+        <button type="submit">Submit</button>
+      </div>
+      <div className={styles.signIn}>
+        <p>
+          Do not have username?
+          <Link href="/signup" passHref>
+            Create
+          </Link>
+        </p>
+      </div>
+    </form>
+  );
 };
 
 export default Login;

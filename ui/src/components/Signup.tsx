@@ -1,17 +1,23 @@
-import { useRouter } from "next/navigation";
+"use client";
+
 import styles from "./Login.module.css";
+import Link from "next/link";
+import { User } from "./Room";
+import { useRouter } from "next/navigation";
 
-interface Props {
-  setAuth: Function;
-}
+interface Props {}
 
-const Signup: React.FC<Props> = ({ setAuth }) => {
+const Signup: React.FC<Props> = ({}) => {
   const router = useRouter();
-  const showSignIn = () => {
-    router.push("/");
+
+  const setAuth = (user: User) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("user", JSON.stringify(user));
+      router.push("chat");
+    }
   };
 
-  const onCreateUsername = async (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     let username = e.target.username.value;
     let phone = e.target.phone.value;
@@ -25,8 +31,9 @@ const Signup: React.FC<Props> = ({ setAuth }) => {
     }
     setAuth(res);
   };
+
   return (
-    <form action="" className={styles.form} onSubmit={onCreateUsername}>
+    <form action="" className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.form_item}>
         <label className={styles.label}>Username</label>
         <input
@@ -52,7 +59,7 @@ const Signup: React.FC<Props> = ({ setAuth }) => {
       </div>
       <div className={`${styles.signIn} ${styles.form_item}`}>
         <p>
-          Already have a username? <button onClick={showSignIn}>Sign In</button>
+          Already have a username? <Link href="/">Sign In</Link>
         </p>
       </div>
     </form>

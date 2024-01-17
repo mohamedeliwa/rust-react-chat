@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Avatar from "./Avatar";
 import styles from "./conversation.module.css";
-import { User } from "./Room";
+import { User } from "@/libs/types";
 
 const ConversationItem: React.FC<any> = ({ right, content, username }) => {
   if (right) {

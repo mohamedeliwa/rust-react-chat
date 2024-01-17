@@ -1,4 +1,4 @@
-import { Room, RoomsList } from "@/libs/types";
+import { Message, Room, RoomsList } from "@/libs/types";
 
 /**
  * create a new chat room between two users
@@ -17,7 +17,7 @@ const create = async (user: string, phone: string): Promise<Room> => {
       body: JSON.stringify({ phone }),
     });
     if (!response.ok) throw await response.json();
-    return response.json();
+    return await response.json();
   } catch (e) {
     return Promise.reject(e);
   }
@@ -33,7 +33,23 @@ const getAll = async (user: string): Promise<RoomsList> => {
     const url = `http://localhost:8080/rooms/${user}`;
     let response = await fetch(url);
     if (!response.ok) throw await response.json();
-    return response.json();
+    return await response.json();
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+/**
+ * fetches messages of a room
+ * @param {string} roomID - The room id for which should fetch conversation
+ * @returns a list of a room's messages
+ */
+const getMessages = async (roomID: string): Promise<Message[]> => {
+  try {
+    const url = `http://localhost:8080/conversations/${roomID}`;
+    let response = await fetch(url);
+    if (!response.ok) throw await response.json();
+    return await response.json();
   } catch (e) {
     return Promise.reject(e);
   }
@@ -42,6 +58,7 @@ const getAll = async (user: string): Promise<RoomsList> => {
 const room = {
   create,
   getAll,
+  getMessages,
 };
 
 export default room;

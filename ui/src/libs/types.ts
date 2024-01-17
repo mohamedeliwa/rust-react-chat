@@ -11,6 +11,14 @@ export interface Room {
   last_message: string;
 }
 
+export interface Message {
+  content: string;
+  created_at: string;
+  id: string;
+  room_id: string;
+  user_id: string;
+}
+
 export type RoomsList = {
   room: Room;
   users: User[];

@@ -1,4 +1,4 @@
-import { User } from "@/components/Room";
+import { User } from "@/libs/types";
 
 /**
  * used for user registration

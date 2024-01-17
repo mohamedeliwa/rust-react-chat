@@ -1,31 +1,22 @@
 "use client";
 
+import room from "@/api/room";
 // We’ll use this Hook to fetch conversations based on the given room id:
-import { useCallback, useEffect, useState } from "react";
-
-const fetchRoomData = async (room_id: string) => {
-  if (!room_id) return;
-  const url = `http://localhost:8080/conversations/${room_id}`;
-  try {
-    let resp = await fetch(url).then((res) => res.json());
-    return resp;
-  } catch (e) {
-    console.log(e);
-  }
-};
+import { useCallback, useState } from "react";
+import { Message } from "./types";
 
 export default function useConversations() {
   const [isLoading, setIsLoading] = useState(true);
-  const [messages, setMessages] = useState<any[]>([]);
-  const updateMessages = (resp = []) => {
-    setIsLoading(false);
-    console.log({ resp });
+  const [messages, setMessages] = useState<Message[]>([]);
 
-    setMessages(resp);
+  const updateMessages = (messages: Message[] = []) => {
+    setIsLoading(false);
+    setMessages(messages);
   };
+
   const fetchConversations = useCallback((id: string) => {
     setIsLoading(true);
-    fetchRoomData(id).then(updateMessages);
+    room.getMessages(id).then(updateMessages);
   }, []);
 
   return { isLoading, messages, setMessages, fetchConversations };

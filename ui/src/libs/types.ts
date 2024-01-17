@@ -23,3 +23,16 @@ export type RoomsList = {
   room: Room;
   users: User[];
 }[];
+
+export enum WsMessageType {
+  TEXT = "TEXT",
+  TYPING = "TYPING",
+}
+
+export interface WsMessage {
+  id: number;
+  chat_type: WsMessageType;
+  value: string[];
+  room_id: string;
+  user_id: string;
+}

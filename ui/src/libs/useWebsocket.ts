@@ -4,8 +4,9 @@
 import { useEffect, useRef } from "react";
 import useUser from "./useUser";
 import websocket from "@/api/websocket";
+import { WsMessage } from "./types";
 
-export default function useWebsocket(onMessage: Function) {
+export default function useWebsocket(onMessage: (msg: WsMessage) => void) {
   const ws = useRef<WebSocket | null>(null);
   let { user } = useUser();
 
@@ -26,13 +27,14 @@ export default function useWebsocket(onMessage: Function) {
   useEffect(() => {
     if (!ws.current) return;
     ws.current.onmessage = (e) => {
-      onMessage(e.data);
+      let message = JSON.parse(e.data);
+      onMessage(message);
     };
   }, [onMessage]);
 
-  const sendMessage = (msg: string) => {
+  const sendMessage = (msg: WsMessage) => {
     if (!ws.current) return;
-    ws.current.send(msg);
+    ws.current.send(JSON.stringify(msg));
   };
 
   return sendMessage;

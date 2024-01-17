@@ -1,3 +1,5 @@
+"use client";
+
 import styles from "./Avatar.module.css";
 
 function getShortName(full_name = "") {

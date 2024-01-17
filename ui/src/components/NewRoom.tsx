@@ -2,39 +2,25 @@
 
 import React, { useState } from "react";
 import styles from "./NewRoom.module.css";
+import room from "@/api/room";
+import useUser from "@/libs/useUser";
 
 const NewRoom: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [phone, setPhone] = useState<string>("");
+  const { user } = useUser();
 
   const handleRoomCreation = async () => {
     try {
-      const item = window.localStorage.getItem("user");
-      let user = item ? JSON.parse(item) : "";
       if (!user) return;
+      await room.create(user?.id, phone);
 
-      const url = `http://localhost:8080/rooms/${user?.id}`;
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ phone }),
-      });
-
-      // in case of request error
-      if (response.status < 200 || response.status > 200) {
-        const msg = await response.text();
-        alert(`${msg}. \nplease try again!`);
-        return;
-      }
-
-      // // reload to fetch the newly updated room list
+      // reload to fetch the newly updated room list
       if (typeof window !== "undefined") {
         window.location.reload();
       }
-    } catch (error) {
+    } catch (error: any) {
+      alert(`${error.message}. \nplease try again!`);
       console.log({ error });
     }
   };

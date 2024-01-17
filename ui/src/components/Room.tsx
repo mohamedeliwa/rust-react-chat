@@ -1,32 +1,12 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import Avatar from "./Avatar";
 import styles from "./Room.module.css";
 import useDateParser from "@/libs/useDateParser";
-
-async function getRooms() {
-  try {
-    let user = JSON.parse(localStorage.getItem("user") as string);
-    const url = `http://localhost:8080/rooms/${user?.id}`;
-    let result = await fetch(url);
-    return result.json();
-  } catch (e) {
-    console.log(e);
-    return Promise.resolve(null);
-  }
-}
-
-export interface User {
-  id: string;
-  username: string;
-  phone: string;
-}
-
-export interface Room {
-  id: string;
-  users: User[];
-  created_at: string;
-  last_message: string;
-}
+import room from "@/api/room";
+import useUser from "@/libs/useUser";
+import { Room, RoomsList, User } from "@/libs/types";
 
 interface ChatListItemProps {
   onSelect: Function;
@@ -72,34 +52,43 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
 };
 
 interface ChatListProps {
-  onChatChange: (data: Room) => void;
+  onChatChange: (room: Room) => void;
   userId: string;
 }
 const ChatList: React.FC<ChatListProps> = ({ onChatChange, userId }) => {
-  const [data, setData] = useState<{ room: Room; users: User[] }[]>([]);
+  const [rooms, setRooms] = useState<RoomsList>([]);
   const [isLoading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(-1);
+  const { user } = useUser();
+
   useEffect(() => {
     setLoading(true);
-    getRooms().then((data) => {
-      setData(data);
-      setLoading(false);
-    });
-  }, []);
-  const onSelectedChat = (idx: number, item: { room: Room; users: User[] }) => {
+    if (user?.id) {
+      room.getAll(user?.id).then((rooms) => {
+        setRooms(rooms);
+        setLoading(false);
+      });
+    }
+  }, [user?.id]);
+
+  const onSelectedChat = (
+    idx: number,
+    { room, users }: { room: Room; users: User[] }
+  ) => {
     setSelectedItem(idx);
-    onChatChange({ ...item.room, users: item.users });
+    onChatChange({ ...room, users });
   };
+
   return (
     <div className={styles.chat_rooms_container}>
       {isLoading && <p>Loading chat lists.</p>}
-      {data.map((item, index) => {
+      {rooms.map(({ room, users }, index) => {
         return (
           <ChatListItem
-            onSelect={(idx: number) => onSelectedChat(idx, item)}
-            room={{ ...item.room, users: item.users }}
+            onSelect={(idx: number) => onSelectedChat(idx, { room, users })}
+            room={{ ...room, users }}
             index={index}
-            key={item.room.id}
+            key={room.id}
             userId={userId}
             selectedItem={selectedItem}
           />

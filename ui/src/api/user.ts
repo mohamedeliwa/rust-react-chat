@@ -47,9 +47,14 @@ const login = async ({ phone }: { phone: string }): Promise<User> => {
   }
 };
 
+const logout = async () => {
+  window.localStorage.removeItem("user");
+};
+
 const user = {
   create,
   login,
+  logout,
 };
 
 export default user;

@@ -1,36 +1,35 @@
 "use client";
 
 import React from "react";
-import ChatList from "./Room";
+import Rooms from "./Rooms";
 import NewRoom from "./NewRoom";
 import styles from "./ChatAside.module.css";
 import { useRouter } from "next/navigation";
 import { Room } from "@/libs/types";
 import useUser from "@/libs/useUser";
+import userApi from "@/api/user";
 
 type Props = {
-  setSelectedRoom: Function;
-  fetchConversations: Function;
+  setRoom: (room: Room) => void;
 };
 
-const ChatAside = ({ setSelectedRoom, fetchConversations }: Props) => {
+const ChatAside = ({ setRoom }: Props) => {
   const router = useRouter();
   const { user } = useUser();
 
   const signOut = () => {
-    user.logout();
+    userApi.logout();
     router.push("/");
   };
 
   const onRoomChange = (room: Room) => {
     if (!room.id) return;
-    fetchConversations(room.id);
-    setSelectedRoom(room);
+    setRoom(room);
   };
 
   return (
     <aside className={styles.aside}>
-      <ChatList onChatChange={onRoomChange} userId={user?.id} />
+      <Rooms onRoomChange={onRoomChange} />
 
       <NewRoom />
       <button onClick={signOut} className={styles.signout}>

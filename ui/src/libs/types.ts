@@ -19,11 +19,6 @@ export interface Message {
   user_id: string;
 }
 
-export type RoomsList = {
-  room: Room;
-  users: User[];
-}[];
-
 export enum WsMessageType {
   TEXT = "TEXT",
   TYPING = "TYPING",

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useConversations from "@/libs/useConversation";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import ConversationBoard from "@/components/ConversationBoard";
 
 const Chat = () => {
   const router = useRouter();
-  const [room, setSelectedRoom] = useState<Room | null>(null);
+  const [room, setRoom] = useState<Room | null>(null);
   const { user } = useUser();
 
   useEffect(() => {
@@ -23,6 +23,13 @@ const Chat = () => {
   const { isLoading, messages, fetchConversations, addMessage } =
     useConversations();
 
+  useEffect(() => {
+    // fetch messages of the selected chat room when changes
+    if (room?.id) {
+      fetchConversations(room.id);
+    }
+  }, [fetchConversations, room?.id]);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -31,10 +38,7 @@ const Chat = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <ChatAside
-          setSelectedRoom={setSelectedRoom}
-          fetchConversations={fetchConversations}
-        />
+        <ChatAside setRoom={setRoom} />
         {room?.id && (
           <ConversationBoard
             room={room}

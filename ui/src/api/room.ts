@@ -1,4 +1,4 @@
-import { Message, Room, RoomsList } from "@/libs/types";
+import { Message, Room, User } from "@/libs/types";
 
 /**
  * create a new chat room between two users
@@ -28,12 +28,20 @@ const create = async (user: string, phone: string): Promise<Room> => {
  * @param user - The user id for whom to fetch all rooms
  * @returns a list of all chat rooms
  */
-const getAll = async (user: string): Promise<RoomsList> => {
+const getAll = async (user: string): Promise<Room[]> => {
   try {
     const url = `http://localhost:8080/rooms/${user}`;
     let response = await fetch(url);
     if (!response.ok) throw await response.json();
-    return await response.json();
+    const rooms: Room[] = (await response.json()).map(
+      ({ room, users }: { room: Room; users: User[] }) => {
+        return {
+          ...room,
+          users,
+        };
+      }
+    );
+    return rooms;
   } catch (e) {
     return Promise.reject(e);
   }

@@ -2,23 +2,22 @@
 
 import Link from "next/link";
 import styles from "./Login.module.css";
-import user from "@/api/user";
+import userApi from "@/api/user";
 import useUser from "@/libs/useUser";
+import { FormEvent, useState } from "react";
 
-interface Props {}
-
-const Login: React.FC<Props> = ({}) => {
+const Login: React.FC = () => {
   const { setUser } = useUser();
+  const [phone, setPhone] = useState<string>("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let phone = e.target.phone.value;
     if (phone === "") {
       return;
     }
     try {
-      let userObj = await user.login({ phone });
-      setUser(userObj);
+      let user = await userApi.login({ phone });
+      setUser(user);
     } catch (error: any) {
       alert(error.message);
     }
@@ -32,6 +31,11 @@ const Login: React.FC<Props> = ({}) => {
           required
           type="text"
           name="phone"
+          value={phone}
+          onChange={(e) => {
+            const phone = e.target.value;
+            setPhone(phone);
+          }}
           placeholder="+1111..."
           className={styles.input}
         />

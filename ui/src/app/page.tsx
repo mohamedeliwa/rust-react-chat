@@ -23,7 +23,7 @@ export default function Home() {
       </Head>
       <div className={styles.container}>
         <div className={styles.form_container}>
-          <h3 className={styles.title}>Log in with your phone.</h3>
+          <h3 className={styles.title}>Login with your phone.</h3>
           <Login />
         </div>
       </div>

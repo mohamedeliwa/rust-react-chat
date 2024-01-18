@@ -1,8 +1,8 @@
 //  This Hook enables us to get the user data from localStorage:
 "use client";
 
-import { User } from "@/components/Room";
 import { useRouter } from "next/navigation";
+import { User } from "./types";
 
 interface Props {
   user: User | null;

@@ -25,7 +25,7 @@ const Login: React.FC = () => {
 
   return (
     <form action="" className={styles.form} onSubmit={handleSubmit}>
-      <div>
+      <div className={styles.form_item}>
         <label className={styles.label}>Phone</label>
         <input
           required
@@ -40,13 +40,13 @@ const Login: React.FC = () => {
           className={styles.input}
         />
       </div>
-      <div className={styles.submit}>
+      <div className={`${styles.submit} ${styles.form_item}`}>
         <button type="submit">Submit</button>
       </div>
-      <div className={styles.signIn}>
+      <div className={`${styles.signIn} ${styles.form_item}`}>
         <p>
           Do not have username?
-          <Link href="/signup" passHref>
+          <Link className={styles.link} href="/signup" passHref>
             Create
           </Link>
         </p>

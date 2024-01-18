@@ -63,7 +63,10 @@ const Signup: React.FC<Props> = ({}) => {
       </div>
       <div className={`${styles.signIn} ${styles.form_item}`}>
         <p>
-          Already have a username? <Link href="/">Sign In</Link>
+          Already have a username?{" "}
+          <Link className={styles.link} href="/">
+            Sign In
+          </Link>
         </p>
       </div>
     </form>

@@ -1,8 +1,7 @@
 .room_body {
   border-top-right-radius: 25px;
   border-bottom-right-radius: 25px;
-  width: 100%;
-  max-width: 690px;
+  width: 70%;
   display: grid;
   grid-template-rows: 80px minmax(450px, 1fr) 65px;
 }

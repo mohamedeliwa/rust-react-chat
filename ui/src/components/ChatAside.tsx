@@ -6,7 +6,6 @@ import NewRoom from "./NewRoom";
 import styles from "./ChatAside.module.css";
 import { useRouter } from "next/navigation";
 import { Room } from "@/libs/types";
-import useUser from "@/libs/useUser";
 import userApi from "@/api/user";
 
 type Props = {
@@ -15,7 +14,6 @@ type Props = {
 
 const ChatAside = ({ setRoom }: Props) => {
   const router = useRouter();
-  const { user } = useUser();
 
   const signOut = () => {
     userApi.logout();
@@ -29,12 +27,16 @@ const ChatAside = ({ setRoom }: Props) => {
 
   return (
     <aside className={styles.aside}>
-      <Rooms onRoomChange={onRoomChange} />
+      <div className={styles.rooms}>
+        <Rooms onRoomChange={onRoomChange} />
+      </div>
 
-      <NewRoom />
-      <button onClick={signOut} className={styles.signout}>
-        LOG OUT
-      </button>
+      <div className={styles.controls}>
+        <NewRoom />
+        <button onClick={signOut} className={styles.signout}>
+          LOG OUT
+        </button>
+      </div>
     </aside>
   );
 };

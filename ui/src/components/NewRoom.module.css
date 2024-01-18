@@ -20,14 +20,26 @@
 
 .new_room_btn {
   flex-basis: 100%;
+  cursor: pointer;
+}
+.new_room_btn:hover {
+  box-shadow: 5px 5px 5px rgb(143, 141, 141);
 }
 
 .create_room_btn {
   flex-basis: 45%;
+  cursor: pointer;
+}
+.create_room_btn:hover {
+  box-shadow: 5px 5px 5px rgb(143, 141, 141);
 }
 
 .cancel_btn {
   flex-basis: 45%;
+  cursor: pointer;
+}
+.cancel_btn:hover {
+  box-shadow: 5px 5px 5px rgb(143, 141, 141);
 }
 
 .input {

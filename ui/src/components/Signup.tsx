@@ -2,24 +2,25 @@
 
 import styles from "./Login.module.css";
 import Link from "next/link";
-import user from "@/api/user";
+import userApi from "@/api/user";
 import useUser from "@/libs/useUser";
+import { FormEvent, useState } from "react";
 
 interface Props {}
 
 const Signup: React.FC<Props> = ({}) => {
   const { setUser } = useUser();
+  const [username, setUsername] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    let username = e.target.username.value;
-    let phone = e.target.phone.value;
-    if (username === "" || phone === "") {
-      return;
-    }
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
-      let userObj = await user.create({ username, phone });
-      setUser(userObj);
+      e.preventDefault();
+      if (username === "" || phone === "") {
+        return;
+      }
+      let user = await userApi.create({ username, phone });
+      setUser(user);
     } catch (error: any) {
       alert(error.message);
     }
@@ -33,6 +34,11 @@ const Signup: React.FC<Props> = ({}) => {
           required
           type="text"
           name="username"
+          value={username}
+          onChange={(e) => {
+            const username = e.target.value;
+            setUsername(username);
+          }}
           placeholder="John Doe"
           className={styles.input}
         />
@@ -43,6 +49,11 @@ const Signup: React.FC<Props> = ({}) => {
           required
           type="text"
           name="phone"
+          value={phone}
+          onChange={(e) => {
+            const phone = e.target.value;
+            setPhone(phone);
+          }}
           placeholder="+1111..."
           className={styles.input}
         />

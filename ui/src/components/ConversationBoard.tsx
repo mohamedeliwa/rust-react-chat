@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from "react";
-import Avatar from "./Avatar";
+import { useCallback, useState } from "react";
 import styles from "./ConversationBoard.module.css";
 import useUser from "@/libs/useUser";
 import { Message, Room, WsMessage, WsMessageType } from "@/libs/types";
 import Conversation from "./conversation";
 import useWebsocket from "@/libs/useWebsocket";
 import NewMessageForm from "./NewMessageForm";
+import ConversationBanner from "./ConversationBanner";
 
 type Props = {
   room: Room;
@@ -61,32 +61,7 @@ const ConversationBoard = ({
 
   return (
     <section className={styles.room_body}>
-      <div className={styles.room_banner}>
-        <div className={styles.avatar}>
-          <Avatar bgcolor="rgb(245 158 11)">
-            {room.users
-              .filter((user) => user.id !== user.id)
-              .map((user) => user.username)
-              .join("")}
-          </Avatar>
-          <div>
-            <p className={styles.target_user}>
-              {room.users
-                .filter((user) => user.id !== user.id)
-                .map((user) => user.username)
-                .join("")}
-            </p>
-            <div className={styles.banner_time}>
-              {isTyping ? "Typing..." : "10:15 AM"}
-            </div>
-          </div>
-        </div>
-        <hr
-          style={{
-            background: "#F0EEF5",
-          }}
-        />
-      </div>
+      <ConversationBanner room={room} isTyping={isTyping} />
       {isLoading && room.id && (
         <p
           style={{

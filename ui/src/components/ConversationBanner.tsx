@@ -26,10 +26,10 @@ const ConversationBanner = ({ room, isTyping }: Props) => {
             {room.users
               .filter((user) => user.id !== authenticatedUser?.id)
               .map((user) => user.username)
-              .join("")}
+              .join("") || "Saved Messages"}
           </p>
           <div className={styles.banner_time}>
-            {isTyping ? "Typing..." : "10:15 AM"}
+            {isTyping ? "Typing..." : null}
           </div>
         </div>
       </div>

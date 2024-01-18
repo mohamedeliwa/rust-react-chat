@@ -18,7 +18,7 @@ interface Props {
 const Avatar: React.FC<Props> = ({ children, bgcolor = "" }) => {
   return (
     <div className={styles.container} style={{ backgroundColor: bgcolor }}>
-      <span className={styles.content}>{getShortName(children)}</span>
+      <span className={styles.content}>{getShortName(children) || "SM"}</span>
     </div>
   );
 };
